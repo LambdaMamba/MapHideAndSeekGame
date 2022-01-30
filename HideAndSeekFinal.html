@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="map" style="width:800px; height:600px;"></div>
+<div id="output"></div>
+</div>
+
+<script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-latest.js"></script>
+
+
+
+<script type="text/javascript" charset="utf-8" src="https://map.yahooapis.jp/js/V1/jsapi?appid=INSERT_YOUR_API_KEY"></script>
+<script type="text/javascript">
+
+
+function start(){
+var count = 0;
+
+var myMap = new Y.Map("map");
+
+myMap.drawMap(
+    new Y.LatLng(35.7087334, 139.7174545), 
+    13,
+    Y.LayerSetId.NORMAL
+);
+
+var myMarker2 = new Y.Marker(
+    new Y.LatLng(35.68800, 139.717450),
+    {
+        icon: new Y.Icon('PuppyHide.png')
+    }
+);
+    myMap.addFeature(myMarker2);
+
+
+var markerClicked2 = function(){
+    myMap.removeFeature(myMarker2);
+    alert("てっちゃんが隠れた！\n5クリック以内に探そう！")
+    var count = 0;
+    var min = -1000;
+    var max = 1000;
+    var randomx = Math.random() * (+max - + min) + + min;
+    var randomy = Math.random() * (+max - + min) + + min;
+    var myx = 35.7087334+randomx*0.0008;
+    var myy = 139.7174545-randomy*0.0008;
+    var l2 = (new Y.LatLng(myx, myy));
+
+
+    myMap.bind('click', function(latlng){
+        if(count<5){
+            alert(latlng.distance(l2) +" km てっちゃんから離れている。\n残りクリック回数："+(5-count));
+            count++;
+        }
+        else{
+            alert("残念！てっちゃん見つからず！");
+            location.reload();
+        }
+        
+    });
+
+
+    var myMarker = new Y.Marker(
+        new Y.LatLng(myx, myy),
+        {
+            icon: new Y.Icon('Puppy.png')
+        }
+    );
+        myMap.addFeature(myMarker);
+
+        var markerClicked = function(){
+            var ld = this.getLatLng();
+            alert("やったー！てっちゃんを見つけた！");
+            location.reload();
+            }
+            myMarker.bind('click', markerClicked);
+
+        $('#map').bind("mousemove", function(e){
+            var pos = $(this).position();
+            var x = e.pageX - pos.left;
+            var y = e.pageY - pos.top;
+            var x1 = myx;
+            var y1 = myy;
+            var ll = myMap.fromContainerPixelToLatLng(new Y.Point(x, y));
+            $('#output').html("マウスの緯度経度:" + ll.toString());
+    
+        });
+            
+
+
+}
+myMarker2.bind('click', markerClicked2);
+}
+
+
+
+</script>
+
+</body>
+
+<body onload="start();"></body>
+</html>
